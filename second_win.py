@@ -1,81 +1,142 @@
-from PyQt5.QtCore import Qt, QTime, QTimer
-from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QHBoxLayout, QLabel, QVBoxLayout, QLineEdit
-from my_app import *
+from PyQt5.QtCore import Qt, QTimer, QTime, QLocale
+from PyQt5.QtGui import QDoubleValidator, QIntValidator, QFont # проверка типов вводимых значений
+from PyQt5.QtWidgets import (
+        QApplication, QWidget, 
+        QHBoxLayout, QVBoxLayout, QGridLayout, 
+        QGroupBox, QRadioButton,
+        QPushButton, QLabel, QListWidget, QLineEdit)
+
 from instr import *
-app = QApplication([])
-my_win = QWidget()
-my_win.setWindowTitle('Здоровье')
-my_win.move(200, 100)
-my_win.resize(1000, 600)
+from final_win import *
+
+class Experiment():
+    def __init__(self, age, test1, test2, test3):
+        self.age = age
+        self.t1 = test1
+        self.t2 = test2
+        self.t3 = test3
+
 class TestWin(QWidget):
+    def __init__(self):
+        ''' окно, в котором проводится опрос '''
+        super().__init__()
+        self.initUI()
+        self.connects()
+        self.set_appear()
+        self.show()
+
+
+    def set_appear(self):
+        self.setWindowTitle(txt_title)
+        self.resize(win_width, win_height)
+        self.move(win_x, win_y)
+    def initUI(self):
+        self.btn_next = QPushButton(txt_sendresults, self)
+        self.btn_test1 = QPushButton(txt_starttest1, self)
+        self.btn_test2 = QPushButton(txt_starttest2, self)
+        self.btn_test3 = QPushButton(txt_starttest3, self)
+        self.text_name = QLabel(txt_name)
+        self.text_age = QLabel(txt_age)
+        self.text_test1 = QLabel(txt_test1)
+        self.text_test2 = QLabel(txt_test2)
+        self.text_test3 = QLabel(txt_test3)
+        self.text_timer = QLabel(txt_timer)
+        self.text_timer.setFont(QFont("Times", 36, QFont.Bold))
+        self.loc = QLocale(QLocale.English, QLocale.UnitedStates)
+        self.validator = QDoubleValidator()
+        self.validator.setLocale(self.loc)
+        self.line_name = QLineEdit(txt_hintname)
+        self.line_age = QLineEdit(txt_hintage)
+        self.line_age.setValidator(self.validator)
+        self.line_age.setValidator(QIntValidator(7, 150))
+        self.line_test1 = QLineEdit(txt_hinttest1)
+        self.line_test1.setValidator(self.validator)
+        self.line_test1.setValidator(QIntValidator(0, 150))
+        self.line_test2 = QLineEdit(txt_hinttest2)
+        self.line_test2.setValidator(self.validator)
+        self.line_test2.setValidator(QIntValidator(0, 150))
+        self.line_test3 = QLineEdit(txt_hinttest3)
+        self.line_test3.setValidator(self.validator)
+        self.line_test3.setValidator(QIntValidator(0, 150))
+    
+        self.v_line1 = QVBoxLayout()
+        self.v_line2 = QVBoxLayout()
+        self.h_line = QHBoxLayout()
+        self.v_line2.addWidget(self.text_timer, alignment = Qt.AlignCenter)
+        self.v_line1.addWidget(self.text_name, alignment = Qt.AlignLeft)
+        self.v_line1.addWidget(self.line_name, alignment = Qt.AlignLeft) 
+        self.v_line1.addWidget(self.text_age, alignment = Qt.AlignLeft)
+        self.v_line1.addWidget(self.line_age, alignment = Qt.AlignLeft)
+        self.v_line1.addWidget(self.text_test1, alignment = Qt.AlignLeft)
+        self.v_line1.addWidget(self.btn_test1, alignment = Qt.AlignLeft)
+        self.v_line1.addWidget(self.line_test1, alignment = Qt.AlignLeft) 
+        self.v_line1.addWidget(self.text_test2, alignment = Qt.AlignLeft)
+        self.v_line1.addWidget(self.btn_test2, alignment = Qt.AlignLeft) 
+        self.v_line1.addWidget(self.text_test3, alignment = Qt.AlignLeft)
+        self.v_line1.addWidget(self.btn_test3, alignment = Qt.AlignLeft)
+        self.v_line1.addWidget(self.line_test2, alignment = Qt.AlignLeft)
+        self.v_line1.addWidget(self.line_test3, alignment = Qt.AlignLeft) 
+        self.v_line1.addWidget(self.btn_next, alignment = Qt.AlignCenter) 
+        self.h_line.addLayout(self.v_line1)  
+        self.h_line.addLayout(self.v_line2)        
+        self.setLayout(self.h_line)
+    def next_click(self):
+        self.hide()
+        self.exp = Experiment(int(self.line_age.text()), self.line_test1.text(), self.line_test2.text(), self.line_test2.text())
+        self.fw = FinalWin(self.exp)
+    def timer_test1(self):
+        global time
+        time = QTime(0, 0, 15)
+        self.timer = QTimer()
+        self.timer.timeout.connect(self.timer1Event)
+        self.timer.start(1000)
     def timer1Event(self):
         global time
-        time = QTime(0,0,15)
-        self.time = QTimer()
-        self,
-v_line1 = QVBoxLayout()
-v_line2 = QVBoxLayout()
-LayoutH1 = QHBoxLayout()
-LayoutH2 = QHBoxLayout()
-LayoutH3 = QHBoxLayout()
-LayoutH4 = QHBoxLayout()
-LayoutH5 = QHBoxLayout()
-LayoutH6 = QHBoxLayout()
-LayoutH7 = QHBoxLayout()
-LayoutH8 = QHBoxLayout()
-LayoutH9 = QHBoxLayout()
-LayoutH10 = QHBoxLayout()
-LayoutH11 = QHBoxLayout()
-LayoutH12 = QHBoxLayout()
-LayoutH13 = QHBoxLayout()
-LayoutH14 = QHBoxLayout()
-
-number1 = QLabel('Введите Ф.И.О.:')
-lineedit = QLineEdit(txt_hinttest1)
-number2 = QLabel('Полных лет:')
-lineedit2 = QLineEdit(txt_hinttest2)
-number4 = QLabel('Лягте на спину')
-button1 = QPushButton('Начать тест')
-lineedit3 = QLineEdit(txt_hinttest3)
-number5 = QLabel('Приседания')
-button2 = QPushButton('Начать делать приседания')
-number6 = QLabel('Лягте на спину и пульс')
-lineedit4 = QLineEdit()
-button3 = QPushButton('Начать финальный тест')
-lineedit5 = QLineEdit()
-number7 = QPushButton('Отправить результаты')
-
-LayoutH1.addWidget(number1, alignment = Qt.AlignLeft)
-LayoutH2.addWidget(lineedit, alignment = Qt.AlignLeft)
-LayoutH3.addWidget(number2, alignment = Qt.AlignLeft)
-LayoutH4.addWidget(lineedit2, alignment = Qt.AlignLeft)
-LayoutH5.addWidget(number4, alignment = Qt.AlignLeft)
-LayoutH6.addWidget(button1, alignment = Qt.AlignLeft)
-LayoutH7.addWidget(lineedit3, alignment = Qt.AlignLeft)
-LayoutH8.addWidget(number5, alignment = Qt.AlignLeft)
-LayoutH9.addWidget(button2, alignment = Qt.AlignLeft)
-LayoutH10.addWidget(number6, alignment = Qt.AlignLeft)
-LayoutH11.addWidget(button3, alignment = Qt.AlignLeft)
-LayoutH12.addWidget(lineedit4, alignment = Qt.AlignLeft)
-LayoutH13.addWidget(lineedit5, alignment = Qt.AlignLeft)
-LayoutH14.addWidget(number7, alignment = Qt.AlignCenter)
-v_line1.addLayout(LayoutH1)
-v_line1.addLayout(LayoutH2)
-v_line1.addLayout(LayoutH3)
-v_line1.addLayout(LayoutH4)
-v_line1.addLayout(LayoutH5)
-v_line1.addLayout(LayoutH6)
-v_line1.addLayout(LayoutH7)
-v_line1.addLayout(LayoutH8)
-v_line1.addLayout(LayoutH9)
-v_line1.addLayout(LayoutH10)
-v_line1.addLayout(LayoutH11)
-v_line1.addLayout(LayoutH12)
-v_line1.addLayout(LayoutH13)
-v_line1.addLayout(LayoutH14)
-
-my_win.setLayout(v_line1)
-
-
-my_win.show()
-app.exec_()
+        time = time.addSecs(-1)
+        self.text_timer.setText(time.toString("hh:mm:ss"))
+        self.text_timer.setFont(QFont("Times", 36, QFont.Bold))
+        self.text_timer.setStyleSheet("color: rgb(0,0,0)")
+        if time.toString("hh:mm:ss") == "00:00:00":
+            self.timer.stop()
+    def timer2Event(self):
+        global time
+        time = time.addSecs(-1)
+        self.text_timer.setText(time.toString("hh:mm:ss")[6:8])
+        self.text_timer.setStyleSheet("color: rgb(0,0,0)")
+        self.text_timer.setFont(QFont("Times", 36, QFont.Bold))
+        if time.toString("hh:mm:ss") == "00:00:00":
+            self.timer.stop()
+    def timer_test2(self):
+        global time
+        time = QTime(0, 0, 30)
+        self.timer = QTimer()
+        self.timer.timeout.connect(self.timer2Event)
+        self.timer.start(1500)
+    def timer3Event(self):
+        global time
+        time = time.addSecs(-1)
+        self.text_timer.setText(time.toString("hh:mm:ss"))
+        if int(time.toString("hh:mm:ss")[6:8]) >= 45:
+            self.text_timer.setStyleSheet("color: rgb(0,255,0)")
+        elif int(time.toString("hh:mm:ss")[6:8]) <= 15:
+            self.text_timer.setStyleSheet("color: rgb(0,255,0)")
+        else:
+            self.text_timer.setStyleSheet("color: rgb(0,0,0)")
+        self.text_timer.setFont(QFont("Times", 36, QFont.Bold))
+        if time.toString("hh:mm:ss") == "00:00:00":
+            self.timer.stop()
+    def timer_final(self):
+        global time
+        time = QTime(0, 1, 0)
+        self.timer = QTimer()
+        self.timer.timeout.connect(self.timer3Event)
+        self.timer.start(1000)
+    def connects(self):
+        self.btn_next.clicked.connect(self.next_click)
+        self.btn_test1.clicked.connect(self.timer_test1)
+        self.btn_test2.clicked.connect(self.timer_test2)
+        self.btn_test3.clicked.connect(self.timer_final)
+    def set_appear(self):
+        self.setWindowTitle(txt_title)
+        self.resize(win_width, win_height)
+        self.move(win_x, win_y)
